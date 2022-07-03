@@ -1,0 +1,1 @@
+/opt/rh/devtoolset-7/root/usr/bin/g++  -g   CMakeFiles/StockViewer.dir/src/main.cpp.o  -o StockViewer libStockViewer_lib.a -lcurl 

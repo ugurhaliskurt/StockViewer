@@ -1,0 +1,4 @@
+/home/projects/StockViewer/build/CMakeFiles/rebuild_cache.dir
+/home/projects/StockViewer/build/CMakeFiles/edit_cache.dir
+/home/projects/StockViewer/build/CMakeFiles/StockViewer.dir
+/home/projects/StockViewer/build/CMakeFiles/StockViewer_lib.dir
