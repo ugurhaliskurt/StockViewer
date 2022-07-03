@@ -74,7 +74,7 @@ namespace yfapi
     {
         std::string url = this->_base_url;
         string_replace(url, "{ticker}", ticker);
-        string_replace(url, "{start_time}", timestamp_from_string("2019-01-01"));
+        string_replace(url, "{start_time}", timestamp_from_string("2016-01-01"));
         string_replace(url, "{end_time}", timestamp_from_string(end));
         string_replace(url, "{interval}", get_api_interval_value(this->_interval));
         return url;
@@ -127,18 +127,16 @@ namespace yfapi
     }
 
 
-    double YahooFinanceAPI::getProfitInUSD( std::string stockName, std::string start_date, std::string end_date, std::string current_date, int quantityOfStock )
+    double YahooFinanceAPI::getProfitInUSD( std::string stockName, std::string start_date, std::string end_date, std::string current_date, int totalPrice )
     {
+        
         Formatter::makeValidDate( start_date );
         Formatter::makeValidDate( end_date );
         std::string result = get_ticker_data( stockName, current_date );
         auto dateValuemap = Formatter::convertDateValueMap(result);
         std::string usdTl = get_ticker_data( "TRY=X", current_date );
         auto usdTlmap = Formatter::convertDateValueMap(usdTl);
-        auto val = dateValuemap[end_date];
-        auto val2 =usdTlmap[end_date];
-        auto val3 = dateValuemap[start_date];
-        auto val4 =usdTlmap[start_date];
+        int quantityOfStock = totalPrice / dateValuemap[start_date];
         return ( quantityOfStock * dateValuemap[end_date] / usdTlmap[end_date] ) - (quantityOfStock * dateValuemap[start_date] / usdTlmap[start_date]);
     }
 }

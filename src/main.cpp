@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     else
         date = std::to_string(year)+"-0" + std::to_string(month)+"-0"+ std::to_string(day);
 
-    std::cout << api.getProfitInUSD("SASA.IS", "2019-06-21","2022-07-01" , date , 500);
+    std::cout << std::endl << api.getProfitInUSD("SASA.IS", "2016-06-20","2022-07-01" , date , 10000)<< std::endl;
 
     return 0;
 }

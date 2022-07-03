@@ -33,7 +33,6 @@ std::unordered_map< std::string, double > Formatter::convertDateValueMap(std::st
         }
         catch(...)
         {
-            std::cout << "couldnot read";
         }
         
     }
