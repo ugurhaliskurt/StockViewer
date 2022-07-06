@@ -1,10 +1,16 @@
-#include "yfapi.hpp"
+
 #include <time.h>
+
+#include "yfapi.hpp"
+#include <Server/RestServer.hpp>
+
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
+    
+
     yfapi::YahooFinanceAPI api; 
     api.set_interval(DAILY);
 
@@ -26,5 +32,6 @@ int main(int argc, char* argv[])
 
     std::cout << std::endl << api.getProfitInUSD("SASA.IS", "2016-06-20","2022-07-01" , date , 10000)<< std::endl;
 
+    while(true);
     return 0;
 }
