@@ -15,7 +15,6 @@ add_library( ${LIB_NAME} STATIC
   include/yfapi.hpp
   src/Server/RestServer.cpp
 )
-target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
 set_target_properties(${LIB_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set(CMAKE_BUILD_TYPE Debug)
 include_directories(include)
