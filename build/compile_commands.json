@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/projects/StockViewer/build",
-  "command": "/opt/rh/devtoolset-7/root/usr/bin/g++   -I/home/projects/StockViewer/include  -g   -o CMakeFiles/StockViewer.dir/src/main.cpp.o -c /home/projects/StockViewer/src/main.cpp",
-  "file": "/home/projects/StockViewer/src/main.cpp"
-}
-]
