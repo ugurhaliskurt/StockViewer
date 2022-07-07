@@ -44,6 +44,7 @@ class handler
         void handle_post(http_request message);
         void handle_delete(http_request message);
         void handle_error(pplx::task<void>& t);
+        void handle_options(http_request request);
         http_listener m_listener;
 };
 
