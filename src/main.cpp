@@ -9,7 +9,13 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+    string port = U("34568");
     
+    utility::string_t address = U("http://127.0.0.1:");
+    address.append(port);
+    std::unique_ptr<handler> g_httpHandler = make_unique<handler>(address);
+    g_httpHandler->on_initialize(address);
+
 
     yfapi::YahooFinanceAPI api; 
     api.set_interval(DAILY);
@@ -32,6 +38,9 @@ int main(int argc, char* argv[])
 
     std::cout << std::endl << api.getProfitInUSD("SASA.IS", "2016-06-20","2022-07-01" , date , 10000)<< std::endl;
 
-    while(true);
+    std::cout << "Press ENTER to exit." << std::endl;
+    std::string line;
+    std::getline(std::cin, line);
+    g_httpHandler->on_shutdown();
     return 0;
 }

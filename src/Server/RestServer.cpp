@@ -105,3 +105,22 @@ void handler::handle_put(http_request message)
      message.reply(status_codes::OK,rep);
     return;
 };
+
+void handler::on_initialize(const string& address)
+{
+    uri_builder uri(address);
+  
+
+    auto addr = uri.to_uri().to_string();
+    open().wait();
+
+    ucout << utility::string_t(U("Listening for requests at: ")) << addr << std::endl;
+
+    return;
+}
+
+void handler::on_shutdown()
+{
+    close().wait();
+    return;
+}

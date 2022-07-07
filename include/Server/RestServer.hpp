@@ -33,6 +33,9 @@ class handler
         pplx::task<void>open(){return m_listener.open();}
         pplx::task<void>close(){return m_listener.close();}
 
+        void on_initialize(const string& address);
+        void on_shutdown();
+
     protected:
 
     private:
