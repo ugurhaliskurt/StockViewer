@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 
 project(StockViewer)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC -g3")
+
 find_library(CPPREST_LIB cpprest)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(OpenSSL 1.0.0 REQUIRED)

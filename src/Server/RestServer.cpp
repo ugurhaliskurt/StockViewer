@@ -1,4 +1,5 @@
 #include "Server/RestServer.hpp"
+#include <json.hpp>
 
 
 handler::handler()
@@ -78,8 +79,14 @@ void handler::handle_post(http_request message)
 {
     ucout <<  message.to_string() << endl;
 
+    nlohmann::json parsed_data = nlohmann::json::parse( message.extract_string().get() );
+    for( auto &element : parsed_data )
+    {
+        auto val = element["Name"].get<std::string>();
+        std:: cout << val << std::endl;
+    }
 
-     message.reply(status_codes::OK,message.to_string());
+    message.reply(status_codes::OK,message.to_string());
     return ;
 };
 
