@@ -1,5 +1,11 @@
 #pragma once
 
+struct ValueOfStock
+{
+    double value;
+    double paid;
+};
+
 inline std::string getCurrentDate()
 {
     time_t theTime = time(NULL);

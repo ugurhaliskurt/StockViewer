@@ -82,7 +82,7 @@ void handler::handle_post(http_request message)
 
     nlohmann::json parsed_data = nlohmann::json::parse( message.extract_string().get() );
     yfapi::YahooFinanceAPI api; 
-    api.set_interval(WEEKLY);
+    api.set_interval(MONTHLY);
     for( auto &element : parsed_data )
     {
         ClientData clientData;
@@ -93,11 +93,17 @@ void handler::handle_post(http_request message)
     std::for_each(clientDataMap.begin(), clientDataMap.end(), [&api](std::pair<std::string,ClientData> pair){
         api.calculate(pair.second.stockName, pair.first, pair.second.moneyTl );
     });
-    nlohmann::json stockUsdJson = nlohmann::json(api.getStockUsdMap());
-    nlohmann::json stockUsdTotal = nlohmann::json(api.getTotalUsdMap());
-    stockUsdJson.merge_patch(stockUsdTotal);
-    auto val = stockUsdJson.dump();
-    message.reply(status_codes::OK,stockUsdJson.dump());
+    clientDataMap.clear();
+    nlohmann::json myJsonArray = nlohmann::json::array();
+    nlohmann::json myJson;
+    for( auto &pair : api.getStockUsdMap() )
+    {
+        myJson["Date"] = pair.first;
+        myJson["Value"] = pair.second.value;
+        myJson["Paid"] = pair.second.paid;
+        myJsonArray.push_back(myJson);
+    }
+    message.reply(status_codes::OK,myJsonArray.dump());
     return ;
 };
 
