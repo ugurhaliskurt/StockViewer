@@ -9,6 +9,7 @@
 #include "Interval.hpp"
 #include "Formatter.hpp"
 #include "Engine.hpp"
+#include "utilities.hpp"
 
 namespace yfapi
 {
@@ -19,18 +20,25 @@ namespace yfapi
             void set_interval(Interval interval);
             void set_col_name(std::string col_name);
             std::string get_ticker_data(std::string ticker, std::string end_date);
-            double getProfitInUSD( std::string stockName, std::string start_date, std::string end_date, std::string current_date, int quantityOfStock );
+            double calculate( std::string stockName, std::string start_date, int quantityOfStock );
+
+            std::map< std::string, double >& getStockUsdMap();
+            std::map< std::string, double >& getTotalUsdMap();
 
         private:
             std::string _base_url;
             Interval _interval;
             std::string _col_name;
+            std::map< std::string, double > stockUsd; //represent stock and dollar quantity for that
+            std::map< std::string, double > totalUsd;
 
             std::string build_url(std::string ticker, std::string end_date);
             bool string_replace(std::string& str, const std::string from, const std::string to);
             std::string timestamp_from_string(std::string date);
             std::string download_file(std::string url);
             static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
+            void addNewStock(std::map< std::string, double > &myMap );
+            void addNewUsd(std::string& startDate, double dollar );
     };
 
     YahooFinanceAPI::YahooFinanceAPI()
@@ -127,16 +135,74 @@ namespace yfapi
     }
 
 
-    double YahooFinanceAPI::getProfitInUSD( std::string stockName, std::string start_date, std::string end_date, std::string current_date, int totalPrice )
+    double YahooFinanceAPI::calculate( std::string stockName, std::string start_date, int totalPrice )
     {
-        
-        Formatter::makeValidDate( start_date );
-        Formatter::makeValidDate( end_date );
+        std::string current_date = getCurrentDate();
         std::string result = get_ticker_data( stockName, current_date );
         auto dateValuemap = Formatter::convertDateValueMap(result);
+
         std::string usdTl = get_ticker_data( "TRY=X", current_date );
         auto usdTlmap = Formatter::convertDateValueMap(usdTl);
+
+        Formatter::makeValidDate( start_date, dateValuemap );
+        Formatter::makeValidDate( current_date, dateValuemap );
         int quantityOfStock = totalPrice / dateValuemap[start_date];
-        return ( quantityOfStock * dateValuemap[end_date] / usdTlmap[end_date] ) - (quantityOfStock * dateValuemap[start_date] / usdTlmap[start_date]);
+
+
+
+        std::map< std::string, double > tmpStockUsd;
+        std::for_each(dateValuemap.begin(), dateValuemap.end(), [&tmpStockUsd, &quantityOfStock, &usdTlmap]( std::pair<std::string, double> pair ){
+            tmpStockUsd.insert( std::make_pair(pair.first, (quantityOfStock * pair.second / usdTlmap[pair.first])) );
+        });
+
+        addNewStock(tmpStockUsd);
+        addNewUsd( start_date ,(double)totalPrice / usdTlmap[start_date]);
+        return 0;
+    }
+
+    void YahooFinanceAPI::addNewStock(std::map< std::string, double > &stockMap)
+    {
+        auto it = stockUsd.find(stockMap.begin()->first);
+        if( it == stockUsd.end() )
+        {
+            stockUsd = std::move(stockMap);
+        }
+        else
+        {
+            for( auto pair : stockMap )
+            {
+                it->second += pair.second;
+                ++it;
+            }
+        }
+    }
+    void YahooFinanceAPI::addNewUsd( std::string &startDate, double stockMap)
+    {
+        auto it = totalUsd.find(startDate);
+        if( it == totalUsd.end() )
+        {
+            for( auto &pair : stockUsd )
+            {
+                totalUsd[pair.first] = stockMap;
+            }
+        }
+        else
+        {
+            while( it != totalUsd.end() )
+            {
+                it->second += stockMap;
+                ++it;
+            }
+        }
+    }
+
+    std::map< std::string, double >& YahooFinanceAPI::getStockUsdMap()
+    {
+        return stockUsd;
+    }
+
+    std::map< std::string, double >& YahooFinanceAPI::getTotalUsdMap()
+    {
+        return totalUsd;
     }
 }

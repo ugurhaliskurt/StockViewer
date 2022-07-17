@@ -22,7 +22,11 @@ using namespace http;
 using namespace utility;
 using namespace http::experimental::listener;
 
-
+struct ClientData
+{
+    std::string stockName;
+    int moneyTl;
+};
 class handler
 {
     public:
@@ -46,6 +50,8 @@ class handler
         void handle_error(pplx::task<void>& t);
         void handle_options(http_request request);
         http_listener m_listener;
+
+        std::map<std::string, ClientData> clientDataMap;
 };
 
 #endif // HANDLER_H

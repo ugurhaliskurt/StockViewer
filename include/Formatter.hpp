@@ -1,21 +1,22 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <sstream>
 #include <iostream>
+#include <algorithm> 
 
 class Formatter
 {
     public:
-        static std::unordered_map< std::string, double > convertDateValueMap( std::string &str );
-        static void makeValidDate( std::string &date );
+        static std::map< std::string, double > convertDateValueMap( std::string &str );
+        static void makeValidDate( std::string &date, std::map<std::string, double> inputMap );
     private:
         static int dayofweek(int d, int m, int y);
 };
 
-std::unordered_map< std::string, double > Formatter::convertDateValueMap(std::string &str)
+std::map< std::string, double > Formatter::convertDateValueMap(std::string &str)
 {
-    std::unordered_map< std::string, double > result;
+    std::map< std::string, double > result;
     std::istringstream f(str);
     std::string line;
     getline(f, line); // first line is headers do not read
@@ -48,19 +49,16 @@ int Formatter::dayofweek(int d, int m, int y)
              y / 400 + t[m - 1] + d) % 7;
 }
 
-void Formatter::makeValidDate( std::string &date )
+void Formatter::makeValidDate( std::string &date, std::map<std::string, double> inputMap )
 {
-    std::istringstream f(date);
-    std::string line;
-    getline(f, line);
-    int year = std::stoi( line.substr(0,line.find('-')));
-    int month = std::stoi( line.substr(line.find('-')+1));
-    int day = std::stoi( line.substr(line.find('-')+1));
-
-    int weekday =dayofweek(day, month, year);
-    if( weekday > 5 )
+    auto it = inputMap.upper_bound(date)--;
+    if( it != inputMap.end() )
+        date = it->first;
+    else
     {
-        std::cerr << "This date is weekend. Could not calculate :(";
-        exit(-1);
+        std::cerr << date << " is not valid date ";
+        date = inputMap.rbegin()->first;
+        std::cerr << "calculation will be done over " << date << std::endl;
     }
+        
 }

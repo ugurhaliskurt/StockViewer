@@ -1,5 +1,6 @@
 #include "Server/RestServer.hpp"
 #include <json.hpp>
+#include "yfapi.hpp"
 
 
 handler::handler()
@@ -80,13 +81,23 @@ void handler::handle_post(http_request message)
     ucout <<  message.to_string() << endl;
 
     nlohmann::json parsed_data = nlohmann::json::parse( message.extract_string().get() );
+    yfapi::YahooFinanceAPI api; 
+    api.set_interval(WEEKLY);
     for( auto &element : parsed_data )
     {
-        auto val = element["Name"].get<std::string>();
-        std:: cout << val << std::endl;
+        ClientData clientData;
+        clientData.stockName = element["Name"].get<std::string>();
+        clientData.moneyTl = std::stoi( element["Money"].get<std::string>() );
+        clientDataMap[element["Date"].get<std::string>()] = clientData;
     }
-
-    message.reply(status_codes::OK,message.to_string());
+    std::for_each(clientDataMap.begin(), clientDataMap.end(), [&api](std::pair<std::string,ClientData> pair){
+        api.calculate(pair.second.stockName, pair.first, pair.second.moneyTl );
+    });
+    nlohmann::json stockUsdJson = nlohmann::json(api.getStockUsdMap());
+    nlohmann::json stockUsdTotal = nlohmann::json(api.getTotalUsdMap());
+    stockUsdJson.merge_patch(stockUsdTotal);
+    auto val = stockUsdJson.dump();
+    message.reply(status_codes::OK,stockUsdJson.dump());
     return ;
 };
 
