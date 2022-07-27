@@ -51,7 +51,7 @@ class handler
         void handle_options(http_request request);
         http_listener m_listener;
 
-        std::map<std::string, ClientData> clientDataMap;
+        std::multimap<std::string, ClientData> clientDataMap;
 };
 
 #endif // HANDLER_H
